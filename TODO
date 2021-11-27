@@ -1,0 +1,3 @@
+(*) complete handle_obj_file_line function
+(*) make function to get mesh object from obj_content
+(*) make functions to dispose mesh and obj_content objects 
