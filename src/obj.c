@@ -9,7 +9,6 @@
 
 #define EMPTY_VEC4_STR " 0 0 0 0"
 #define EMPTY_VEC4_LEN 9
-#define MAX_INDEX_STR_LEN 10
 
 
 //types
@@ -96,9 +95,15 @@ bool str_contains_digits(char *beg, char *end){
     return FALSE;
 }
 
-void handle_face_line(char* line, obj_content *content){
-    char *prev = strstr(line, " ") + 1, *curr;
+void index_arr_push(index_arr *indexes, index value){
+    size_t arr_sz = ++indexes->count;
+    indexes->array = realloc(indexes->array,arr_sz * sizeof(value));
+    indexes->array[arr_sz - 1] = value;
+}
 
+void handle_face_line(char* line, obj_content *content){
+    // line: "v/vt/vn v/vt/vn v/vt/vn"
+    char *prev = strstr(line, " ") + 1, *curr;
     char *coord_index_beg;
     char *text_coord_index_beg;
     char *normal_vector_beg;
@@ -107,34 +112,19 @@ void handle_face_line(char* line, obj_content *content){
     bool is_not_last = TRUE;
 
     while(is_not_last){
-        curr = strstr(prev, " ");
+        //{prev ; curr} : "v/vt/vn.." 
+        curr = strstr(prev, " ");                                   //"v/vt/vn.."
         is_not_last = curr;
-        // "coord_index/text_coord_index/normal_vector_index"
         coord_index_beg = prev;
-        text_coord_index_beg = strstr(coord_index_beg, "/") + 1;
-        normal_vector_beg = strstr(text_coord_index_beg, "/") + 1;
-        char *buffer = malloc(MAX_INDEX_STR_LEN);
+        text_coord_index_beg = strstr(coord_index_beg, "/") + 1;    //"vt/vn.."
+        normal_vector_beg = strstr(text_coord_index_beg, "/") + 1;  //"vn.."
 
-        arr_sz = ++content->coord_indexes.count;
-        content->coord_indexes.array = realloc(content->coord_indexes.array,arr_sz * sizeof(index));
-        content->coord_indexes.array[arr_sz - 1] = strtoull(coord_index_beg,NULL,0);
-
-        arr_sz = ++content->tex_coord_indexes.count;
-        content->tex_coord_indexes.array = realloc(content->tex_coord_indexes.array,arr_sz * sizeof(index));
-        content->tex_coord_indexes.array[arr_sz - 1] = strtoull(text_coord_index_beg,NULL,0);
-
-        arr_sz = ++content->normal_indexes.count;
-        content->normal_indexes.array = realloc(content->normal_indexes.array,arr_sz * sizeof(index));
-        content->normal_indexes.array[arr_sz - 1] = strtoull(normal_vector_beg,NULL,0);
-
-        printf("%ld,%ld,%ld\n",content->coord_indexes.array[content->coord_indexes.count - 1],
-                                content->tex_coord_indexes.array[content->tex_coord_indexes.count - 1],
-                                content->normal_indexes.array[content->normal_indexes.count - 1]);
+        index_arr_push(&content->coord_indexes,strtoull(coord_index_beg,NULL,0));
+        index_arr_push(&content->tex_coord_indexes,strtoull(text_coord_index_beg,NULL,0));
+        index_arr_push(&content->normal_indexes,strtoull(normal_vector_beg,NULL,0));
 
         prev = curr +1;
     }
-
-
 }
 
 
