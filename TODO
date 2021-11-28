@@ -1,2 +1,3 @@
 (*) make function to get mesh object from obj_content
 (*) make functions to dispose mesh and obj_content objects 
+(*) make function for formatting obj file string before input (avoid possible errors)
