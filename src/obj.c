@@ -116,6 +116,7 @@ void handle_face_line(char* line, obj_content *content){
     char *text_coord_index_beg;
     char *normal_vector_beg;
     char *normal_vector_end;
+    count vertexes_per_face = 0;
     size_t arr_sz;
     bool is_not_last = TRUE;
 
@@ -130,9 +131,10 @@ void handle_face_line(char* line, obj_content *content){
         index_arr_push(&content->coord_indexes,strtoull(coord_index_beg,NULL,0));
         index_arr_push(&content->tex_coord_indexes,strtoull(text_coord_index_beg,NULL,0));
         index_arr_push(&content->normal_indexes,strtoull(normal_vector_beg,NULL,0));
-
+        vertexes_per_face ++;
         prev = curr +1;
     }
+    index_arr_push(&content->faces,vertexes_per_face);
 }
 
 obj_file_line_content check_obj_file_line_content(char *line){
@@ -204,12 +206,14 @@ obj_content read_obj(char *content){
 }
 
 void clear_obj(obj_content *object){
+    free(object->faces.array);
     free(object->coords.array);
     free(object->normals.array);
     free(object->tex_coords.array);
     free(object->coord_indexes.array);
     free(object->normal_indexes.array);
     free(object->tex_coord_indexes.array);
+    object->faces.count = 0;
     object->coords.count = 0;
     object->normals.count = 0;
     object->tex_coords.count = 0;

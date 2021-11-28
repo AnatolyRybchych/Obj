@@ -33,12 +33,12 @@ typedef struct{
     size_t count;
 } vec2f_arr, tex_coord_arr;
 
-typedef size_t index;
+typedef size_t index, count;
 
 typedef struct{
     index *array;
     size_t count;
-} index_arr;
+} index_arr, vertex_count_arr;
 
 //arrays with reletive index arrays
 typedef struct{
@@ -49,6 +49,7 @@ typedef struct{
     index_arr coord_indexes;
     index_arr normal_indexes;
     index_arr tex_coord_indexes;
+    vertex_count_arr faces;
 } obj_content;
 
 //coords -> vertex array
@@ -66,7 +67,7 @@ typedef enum{
     NO_ERRORS = 0,
 } obj_error_code;
 
-typedef void (*on_error)(int error, const char *log);
+typedef void (*on_error)(obj_error_code error, const char *log);
 void set_error_callback(on_error callback);
 
 obj_content read_obj(char *content);
