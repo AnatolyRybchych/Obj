@@ -10,8 +10,8 @@
 #define EMPTY_VEC4_STR " 0 0 0 0"
 #define EMPTY_VEC4_LEN 9
 
-
 //types
+
 typedef enum{
     UNDEFINED      = 0,
     VERTEX         = 1,
@@ -21,10 +21,29 @@ typedef enum{
     COMMENT        = 5,
 } obj_file_line_content;
 
+
+//static functions
+
+static void handle_obj_file_line(char *line, obj_content *content);
+static obj_file_line_content check_obj_file_line_content(char *line);
+static void handle_face_line(char* line, obj_content *content);
+static void handle_texture_coord_line(char* line, obj_content *content);
+static void handle_normal_vector_line(char* line, obj_content *content);
+static void handle_vertex_line(char* line, obj_content *content);
+static void index_arr_push(index_arr *indexes, index value);
+static vec2f parse_vec2(char* text);
+static vec4f parse_vec4(char* text);
+static bool is_string_has_equal_start(char* first, char * second);
+static bool str_contains_digits(char *beg, char *end);
+
+
+
 //globals
+
 static on_error on_error_callback = NULL;
 
-//local functions
+
+
 bool is_string_has_equal_start(char* first, char * second){
     char *f_ptr = first;
     char *s_ptr = second;
@@ -36,15 +55,19 @@ bool is_string_has_equal_start(char* first, char * second){
     return FALSE;
 }
 
-obj_file_line_content check_obj_file_line_content(char *line){
+bool str_contains_digits(char *beg, char *end){
+    bool haveDigits = FALSE;
+    for(char *it = beg; it <= end; it++){
+        haveDigits = haveDigits && isdigit(*it);
+        if(haveDigits) return TRUE;
+    }
+    return FALSE;
+}
 
-    if     (is_string_has_equal_start(line, NORMAL_VECTOR_LINE_START)) return NORMAL_VECTOR;
-    else if(is_string_has_equal_start(line, TEXTURE_COORD_LINE_START)) return TEXTURE_COORD;
-    else if(is_string_has_equal_start(line, VERTEX_LINE_START))        return VERTEX;
-    else if(is_string_has_equal_start(line, FACE_LINE_START))          return FACE;
-    else if(is_string_has_equal_start(line, COMMENT_LINE_START))       return COMMENT;
-    
-    else return UNDEFINED;
+void index_arr_push(index_arr *indexes, index value){
+    size_t arr_sz = ++indexes->count;
+    indexes->array = realloc(indexes->array,arr_sz * sizeof(value));
+    indexes->array[arr_sz - 1] = value;
 }
 
 vec4f parse_vec4(char* text){
@@ -86,21 +109,6 @@ void handle_texture_coord_line(char* line, obj_content *content){
     content->tex_coords.array[new_len-1] = parse_vec2(line + 3);
 }
 
-bool str_contains_digits(char *beg, char *end){
-    bool haveDigits = FALSE;
-    for(char *it = beg; it <= end; it++){
-        haveDigits = haveDigits && isdigit(*it);
-        if(haveDigits) return TRUE;
-    }
-    return FALSE;
-}
-
-void index_arr_push(index_arr *indexes, index value){
-    size_t arr_sz = ++indexes->count;
-    indexes->array = realloc(indexes->array,arr_sz * sizeof(value));
-    indexes->array[arr_sz - 1] = value;
-}
-
 void handle_face_line(char* line, obj_content *content){
     // line: "v/vt/vn v/vt/vn v/vt/vn"
     char *prev = strstr(line, " ") + 1, *curr;
@@ -127,6 +135,16 @@ void handle_face_line(char* line, obj_content *content){
     }
 }
 
+obj_file_line_content check_obj_file_line_content(char *line){
+
+    if     (is_string_has_equal_start(line, NORMAL_VECTOR_LINE_START)) return NORMAL_VECTOR;
+    else if(is_string_has_equal_start(line, TEXTURE_COORD_LINE_START)) return TEXTURE_COORD;
+    else if(is_string_has_equal_start(line, VERTEX_LINE_START))        return VERTEX;
+    else if(is_string_has_equal_start(line, FACE_LINE_START))          return FACE;
+    else if(is_string_has_equal_start(line, COMMENT_LINE_START))       return COMMENT;
+    
+    else return UNDEFINED;
+}
 
 void handle_obj_file_line(char *line, obj_content *content){
     obj_file_line_content content_type;
