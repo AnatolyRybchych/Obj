@@ -3,13 +3,17 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<malloc.h>
 #include<string.h>
+#include<ctype.h>
 
 #define TRUE  1
 #define FALSE 0
 
-typedef int BOOl;
+#define MIN(a,b) ((a)<(b)?(a):(b))
+
+typedef int bool;
 
 typedef struct{
     float x,y,z,w;
@@ -60,12 +64,13 @@ typedef struct{
 
 typedef enum{
     NO_ERRORS = 0,
-} OBJ_ERROR_CODE;
+} obj_error_code;
 
 typedef void (*on_error)(int error, const char *log);
 void set_error_callback(on_error callback);
 
 obj_content read_obj(char *content);
+void clear_obj(obj_content *object);
 
 
 
