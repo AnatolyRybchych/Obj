@@ -33,10 +33,10 @@ typedef struct{
     size_t count;
 } vec2f_arr, tex_coord_arr;
 
-typedef size_t index, count;
+typedef size_t vert_index, count;
 
 typedef struct{
-    index *array;
+    vert_index *array;
     size_t count;
 } index_arr, vertex_count_arr;
 

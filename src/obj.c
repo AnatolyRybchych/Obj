@@ -30,7 +30,7 @@ static void handle_face_line(char* line, obj_content *content);
 static void handle_texture_coord_line(char* line, obj_content *content);
 static void handle_normal_vector_line(char* line, obj_content *content);
 static void handle_vertex_line(char* line, obj_content *content);
-static void index_arr_push(index_arr *indexes, index value);
+static void index_arr_push(index_arr *indexes, vert_index value);
 static vec2f parse_vec2(char* text);
 static vec4f parse_vec4(char* text);
 static bool is_string_has_equal_start(char* first, char * second);
@@ -64,7 +64,7 @@ bool str_contains_digits(char *beg, char *end){
     return FALSE;
 }
 
-void index_arr_push(index_arr *indexes, index value){
+void index_arr_push(index_arr *indexes, vert_index value){
     size_t arr_sz = ++indexes->count;
     indexes->array = realloc(indexes->array,arr_sz * sizeof(value));
     indexes->array[arr_sz - 1] = value;
@@ -123,7 +123,7 @@ void handle_face_line(char* line, obj_content *content){
     while(is_not_last){
         //{prev ; curr} : "v/vt/vn.." 
         curr = strstr(prev, " ");                                   //"v/vt/vn.."
-        is_not_last = curr;
+        is_not_last = curr != NULL;
         coord_index_beg = prev;
         text_coord_index_beg = strstr(coord_index_beg, "/") + 1;    //"vt/vn.."
         normal_vector_beg = strstr(text_coord_index_beg, "/") + 1;  //"vn.."

@@ -1,12 +1,19 @@
 #include "../include/obj.h"
 #include<locale.h>
 
+#define TEST_FILE "./cube.obj"
 
 int main(int argc, char* argv[])
 {
 
     
-    FILE *file = fopen("build\\out\\mesh\\cube.obj","r");
+    FILE *file = fopen(TEST_FILE,"r");
+    if(file == NULL)
+    {
+        fprintf(stderr, "file \"%s\" is not found", TEST_FILE);
+        return -1;
+    }
+
     size_t file_size;
     char *buffer;
     
@@ -20,7 +27,7 @@ int main(int argc, char* argv[])
     obj_content c = read_obj(buffer);
     fclose(file);
     
-    printf("%d\n",c.coords.count);
+    printf("%ld\n",c.coords.count);
     
     free(buffer);
     return 0;
